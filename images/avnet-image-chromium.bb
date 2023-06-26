@@ -96,3 +96,18 @@ inherit extrausers
 EXTRA_USERS_PARAMS = "\
     usermod -p '${PASSWD}' root; \
 "
+IMAGE_INSTALL += "opencv"
+
+update_weston_ini() {
+    if ! grep -q "icon=/home/root/web-server-demo/resources/icon.png" ${IMAGE_ROOTFS}${sysconfdir}/xdg/weston/weston.ini
+    then
+       printf "\n[launcher]\nicon=/home/root/web-server-demo/resources/icon.png\npath=/home/root/web-server-demo/launch.sh\n\n[launcher]\nicon=/home/root/web-server-demo/resources/blank.png\npath=\n\n[launcher]\nicon=/home/root/web-server-demo/resources/exit.png\npath=/home/root/web-server-demo/exit.sh\n\n" >> ${IMAGE_ROOTFS}${sysconfdir}/xdg/weston/weston.ini
+    fi
+
+    if ! grep -q "background-image=/home/root/web-server-demo/resources/desktop.png" ${IMAGE_ROOTFS}${sysconfdir}/xdg/weston/weston.ini
+    then
+       printf "\n[shell]\nbackground-image=/home/root/web-server-demo/resources/desktop.png\nbackground-type=centered\nbackground-color=0xff000000\n\n" >> ${IMAGE_ROOTFS}${sysconfdir}/xdg/weston/weston.ini
+    fi
+}
+
+ROOTFS_POSTPROCESS_COMMAND += "update_weston_ini; "

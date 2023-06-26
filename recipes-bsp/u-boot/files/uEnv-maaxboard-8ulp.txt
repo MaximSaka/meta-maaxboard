@@ -4,10 +4,10 @@
 fdt_file=maaxboard-8ulp.dtb
 
 # Camera can support ov5640
-#dtoverlay_camera=ov5640
+dtoverlay_camera=ov5640
 
 # Display can support mipi
-#dtoverlay_display=mipi
+dtoverlay_display=mipi
 
 # Set 40-pin extended GPIO pin default work as GPIO
 dtoverlay_gpio=yes
