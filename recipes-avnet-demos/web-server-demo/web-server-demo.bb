@@ -10,17 +10,21 @@ do_install() {
     install -d ${D}/home/root/web-server-demo
     cp -r ${WORKDIR}/web-server-demo ${D}/home/root
     chmod -R a+rX ${D}/home/root/web-server-demo
+    chmod +x ${D}/home/root/web-server-demo/launch.sh 
 
-    install -D -m 644 ${WORKDIR}/web-server-demo/autolaunch/autorun.service \
+    install -D -m 0755 ${WORKDIR}/web-server-demo/autolaunch/autorun.service \
         ${D}${sysconfdir}/systemd/system/autorun.service
 
-    install -D -m 644 ${WORKDIR}/web-server-demo/autolaunch/rc.local \
+    install -D -m 0755 ${WORKDIR}/web-server-demo/autolaunch/rc.local \
         ${D}${sysconfdir}/rc.local
 
-    install -D -m 644 ${WORKDIR}/web-server-demo/autolaunch/autorun.sh \
+    install -D -m 0755 ${WORKDIR}/web-server-demo/autolaunch/autorun.sh \
         ${D}/opt/autorun.sh 
 
     chmod +x ${D}/opt/autorun.sh 
+
+    install -D -m 0755 ${WORKDIR}/web-server-demo/autolaunch/root_env \
+        ${D}/opt/root_env 
 }
 FILES:${PN} += "/home/root/web-server-demo"
 FILES:${PN} += "/opt"

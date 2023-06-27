@@ -8,7 +8,6 @@
 #pip3 install psutil==5.8.0
 #pip3 install PyCrypto
 #pip3 install microdot
-#pip3 install tendo
 #pip3 install opencv-python==4.7.0.72
 #pip3 install opencv-python-headless==4.7.0.68
 #####################################################
@@ -48,7 +47,7 @@ from netinfo import NETInfo
 from TC66CClass import TC66C
 from MaaXBoardLEDS import BoardLEDS
 from MaaXBoardLCD import BoardBrightness
-from tendo import singleton
+import singleton
 import subprocess
 import signal
 import time
