@@ -79,7 +79,7 @@ When this process is completed, the source code is checked out into the director
 
 ```bash
 $ cd sources/
-$ git clone https://github.com/Avnet/meta-maaxboard.git -b langdale meta-maaxboard
+$ git clone https://github.com/MaximSaka/meta-maaxboard.git -b langdale meta-maaxboard
 ```
 
 
