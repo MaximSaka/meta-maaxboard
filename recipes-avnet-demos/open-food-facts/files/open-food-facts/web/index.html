@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>MaaXBoard 8ULP Demo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="webconfig.css">
+</head>
+
+<body>
+    <div id="page_main">
+        <div id="page_header" class="header_banner">
+            <div class="header_container row">
+                <div class="logo col-4">
+                    <a href="index.html" title="AVNET"><img src="AVNET_logo.png" alt="Avnet" width="100%"
+                            height="auto"></a>
+                </div>
+                <div class="header_text col-8" style="text-align: center;">
+                    MaaXBoard 8ULP
+                </div>
+            </div>
+        </div>
+
+        <div class="page_body">
+            <div class="row">
+                <div class="col-12">
+
+                    <div style="text-align: center;">
+                        <img src="openfoodfacts.png">
+                    </div>
+                        
+                    <p>Open Food Facts is a food products database made by everyone, for everyone. 
+                        You can use it to make better food choices, and as it is open data, anyone can re-use it for any purpose.</p>
+
+                    <p style="font-size: x-large; font-family: sans-serif; color: #41c363;">Scan the barcode of a food item to explore.</p>
+
+                    <table id="main_table"; border=0 cellpadding="10" style=" text-align: center; font-size: medium; font-family: sans-serif; color: white; width: 100%;">
+
+                        <tr>
+                            <th style="width: 40%;">
+                                 <img style="max-width:80%; height:auto;" id="product_image">
+                            </th>
+                            <th style="vertical-align: middle;">
+                                <p style="color: hsl(59, 94%, 50%); font-size: xx-large; text-align: center;"id="product_name"></p>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="width: 20%; vertical-align:top;">
+                                <p style="font-size: x-large; color: #FF8714; text-align: center;" id="ingredients_text"></p>
+                            </th>
+                            <th style="vertical-align:middle;">
+                                <p style="font-size: large; text-align: left;" id="ingredients"></p>
+                            </th>
+                        </tr>                        
+                        <tr>
+                            <th style="width: 20%; vertical-align:top;">
+                                <p style="font-size: x-large; color: #FF8714; text-align: center;" id="allergens_text"></p>
+                            </th>
+                            <th style="vertical-align:middle; text-align: left">
+                                <p style="font-size: large; text-align: left;" id="allergens"></p>
+                            </th>
+                        </tr>                        
+                        <tr>
+                            <th style="width: 20%;">
+                                 <img style="max-height:100px; width:auto;" id="nutri_image">
+                            </th>
+                            <th style="vertical-align:top;">
+                                <p style="font-size: x-large; color: #7d7b7c;" id="nutri_score_text"></p>
+                                <p style="font-size: large;" id="nutri_score"></p>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="width: 20%;">
+                                 <img style="max-height:100px; width:auto;" id="nova_image">
+                            </th>
+                            <th style="vertical-align:top;">
+                                <p style="font-size: x-large; color: #7d7b7c;" id="nova_score_text"></p>
+                                <p style="font-size: large;" id="nova_score"></p>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+
+        <div class="footer row">
+            AVNET
+        </div>
+    </div>
+
+    <script src="request.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        let pTotal = 0;
+        let pBacklight = 0;
+        let pboard = 0;
+        
+        function parse_vars(data) {
+            const ingredients_text = document.getElementById("ingredients_text");
+            const allergens_text = document.getElementById("allergens_text");
+            const nutri_score_text = document.getElementById("nutri_score_text");
+            const nova_score_text = document.getElementById("nova_score_text");
+  
+            const product_name = document.getElementById("product_name");
+            const ingredients = document.getElementById("ingredients");
+            const product_image = document.getElementById("product_image");
+            const allergens = document.getElementById("allergens");
+            const nutri_image = document.getElementById("nutri_image");
+            const nutri_score = document.getElementById("nutri_score");
+            const nova_image = document.getElementById("nova_image");
+            const nova_score = document.getElementById("nova_score");
+
+            var obj = JSON.parse(data);
+            if (obj.cmdType == 'product') {
+                if(obj.name != ''){
+                    ingredients_text.innerText = 'Ingredients'
+                    allergens_text.innerHTML = 'Allergens'
+                    nutri_score_text.innerHTML = 'NUTRI-SCORE'
+                    nova_score_text.innerHTML = 'NOVA-SCORE'
+
+                    let data = obj.name;
+                    product_name.innerText = obj.name;
+                    ingredients.innerText = obj.ingredients
+                    product_image.src= obj.image
+                    allergens.innerText = obj.allergens
+
+                    if(obj.nutriScore == 'a')
+                    {
+                        nutri_image.src= 'ScoreA.png'
+                        nutri_score.innerHTML = 'Very good nutritional quality'
+                        product_image.style.border = "5px solid #018241"
+                    }
+                    else if(obj.nutriScore == 'b')
+                    {
+                        nutri_image.src= 'ScoreB.png'
+                        nutri_score.innerHTML = 'Good nutritional quality'
+                        product_image.style.border = "5px solid #86bc30"
+                    }
+                    else if(obj.nutriScore == 'c')
+                    {
+                        nutri_image.src= 'ScoreC.png'
+                        nutri_score.innerHTML = 'Average nutritional quality'
+                        product_image.style.border = "5px solid #fecb00"
+                    }
+                    else if(obj.nutriScore == 'd')
+                    {
+                        nutri_image.src= 'ScoreD.png'
+                        nutri_score.innerHTML = 'Poor nutritional quality'
+                        product_image.style.border = "5px solid #f08000"
+                    }
+                    else if(obj.nutriScore == 'e')
+                    {
+                        nutri_image.src= 'ScoreE.png'
+                        nutri_score.innerHTML = 'Bad nutritional quality'
+                        product_image.style.border = "5px solid #e63e11"
+                    }
+                    else
+                    {
+                        nutri_image.src= ''
+                        nutri_score.innerHTML = 'Not available'
+                        product_image.style.border = ""
+                    }
+
+                    if(obj.novaScore == '1')
+                    {
+                        nova_image.src= 'Nova1.png'
+                        nova_score.innerHTML = 'Unprocessed or minimally processed foods'
+                    }
+                    else if(obj.novaScore == '2')
+                    {
+                        nova_image.src= 'Nova2.png'
+                        nova_score.innerHTML = 'Processed culinary ingredients'
+                    }
+                    else if(obj.novaScore == '3')
+                    {
+                        nova_image.src= 'Nova3.png'
+                        nova_score.innerHTML = 'Processed foods'
+                    }
+                    else if(obj.novaScore == '4')
+                    {
+                        nova_image.src= 'Nova4.png'
+                        nova_score.innerHTML = 'Ultra-processed food and drink products'
+                    }
+                    else
+                    {
+                        nova_image.src= ''
+                        nova_score.innerHTML = 'Not available'
+                    }
+
+                }
+                else
+                {
+                    product_name.innerText = 'UNAVAILABLE';
+                    product_image.src= 'NotAvailable.png'
+                    ingredients_text.innerText = ''
+                    allergens_text.innerHTML = ''
+                    nutri_score_text.innerHTML = ''
+                    nova_score_text.innerHTML = ''
+                    ingredients.innerText = ''
+                    allergens.innerText = ''
+                    nova_image.src= ''
+                    nova_score.innerHTML = ''
+                    nutri_image.src= ''
+                    nutri_score.innerHTML = ''
+                    product_image.style.border = ""
+                }
+            }
+        }
+
+        function init() {
+
+            setInterval(function () { make_request('product.cgi'); }, 1000);
+        }
+        window.onload = init;      
+    </script>
+</body>
+
+</html>

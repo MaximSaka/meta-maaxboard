@@ -1,0 +1,15 @@
+#!/bin/sh
+#restore backlight to full brightness on resume
+
+[ -f /sys/devices/platform/pwm-backlight/backlight/pwm-backlight/brightness ] || exit $NA
+
+case "$1" in
+	hibernate|suspend)
+        echo 0 >/sys/devices/platform/pwm-backlight/backlight/pwm-backlight/brightness
+		;;
+	thaw|resume) 
+        echo 9 >/sys/devices/platform/pwm-backlight/backlight/pwm-backlight/brightness
+		;;
+	*) exit $NA
+		;;
+esac
