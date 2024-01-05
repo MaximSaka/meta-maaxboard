@@ -4,3 +4,7 @@ PREFERRED_VERSION_python3-numpy = "1.25.0"
 PREFERRED_VERSION_python3-psutil = "5.9.5"
 PREFERRED_VERSION_python3-pycryptodome = "3.18.0"
 PREFERRED_VERSION_python3-pyserial = "3.5"
+PREFERRED_VERSION_python3-annotated-types = "0.6.0"
+PREFERRED_VERSION_python3-openfoodfacts = "0.1.12"
+PREFERRED_VERSION_python3-pydantic = "2.5.3"
+

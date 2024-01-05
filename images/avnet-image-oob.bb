@@ -88,6 +88,16 @@ CORE_IMAGE_EXTRA_INSTALL:append = " \
     python3-pycryptodome \
     python3-pyserial \
     python3-evdev \
+    python3-certifi \
+    python3-charset-normalizer \
+    python3-idna \
+    python3-annotated-types \
+    python3-idna-ssl \
+    python3-requests \
+    python3-typing-extensions \
+    python3-urllib3 \
+    python3-openfoodfacts \
+    python3-pydantic \
     web-server-demo \
     open-food-facts \
     freerdp \

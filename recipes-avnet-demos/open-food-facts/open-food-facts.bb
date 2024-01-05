@@ -10,6 +10,8 @@ do_install() {
     install -d ${D}/home/root/open-food-facts
     cp -r ${WORKDIR}/open-food-facts ${D}/home/root
     chmod -R a+rX ${D}/home/root/open-food-facts
-    chmod +x ${D}/home/root/open-food-facts/update-autolaunch.sh 
+    chmod +x ${D}/home/root/open-food-facts/update-autolaunch.sh
+    chmod +x ${D}/home/root/open-food-facts/launch.sh
+    chmod +x ${D}/home/root/open-food-facts/autolaunch/autorun.sh
 }
 FILES:${PN} += "/home/root/open-food-facts"
