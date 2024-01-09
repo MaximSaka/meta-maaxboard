@@ -13,5 +13,11 @@ do_install() {
     chmod +x ${D}/home/root/open-food-facts/update-autolaunch.sh
     chmod +x ${D}/home/root/open-food-facts/launch.sh
     chmod +x ${D}/home/root/open-food-facts/autolaunch/autorun.sh
+
+    install -D -m 0755 ${WORKDIR}/open-food-facts/autolaunch/autorun.sh \
+        ${D}/opt/autorun.sh 
+    chmod +x ${D}/opt/autorun.sh 
+
 }
 FILES:${PN} += "/home/root/open-food-facts"
+FILES:${PN} += "/opt"

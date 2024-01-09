@@ -18,10 +18,9 @@ do_install() {
     install -D -m 0755 ${WORKDIR}/web-server-demo/autolaunch/rc.local \
         ${D}${sysconfdir}/rc.local
 
-    install -D -m 0755 ${WORKDIR}/web-server-demo/autolaunch/autorun.sh \
-        ${D}/opt/autorun.sh 
-
-    chmod +x ${D}/opt/autorun.sh 
+    #install -D -m 0755 ${WORKDIR}/web-server-demo/autolaunch/autorun.sh \
+    #    ${D}/opt/autorun.sh 
+    #chmod +x ${D}/opt/autorun.sh 
 
     install -D -m 0755 ${WORKDIR}/web-server-demo/autolaunch/root_env \
         ${D}/opt/root_env 

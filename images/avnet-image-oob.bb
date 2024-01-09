@@ -98,6 +98,8 @@ CORE_IMAGE_EXTRA_INSTALL:append = " \
     python3-urllib3 \
     python3-openfoodfacts \
     python3-pydantic \
+    python3-pydantic-core \
+    python3-tqdm \
     web-server-demo \
     open-food-facts \
     freerdp \
