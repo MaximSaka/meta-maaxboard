@@ -13,24 +13,36 @@ SRC_URI[sha256sum] = "1fd0c1d395372843fba13a51c28e3bb9d59bd7aebfeb17358ffaaa1e4d
 
 DEPENDS = "python3-typing-extensions"
 
-inherit setuptools3
-
 S = "${WORKDIR}/pydantic_core-${PV}"
-
+PYPI_PACKAGE = "pydantic_core"
 PYPI_ARCHIVE_NAME = "pydantic_core-${PV}.${PYPI_PACKAGE_EXT}"
+
+inherit pypi setuptools3
 
 RDEPENDS:${PN} += "python3-typing-extensions"
 
 do_configure:prepend() {
 cat > ${S}/setup.py <<-EOF
-from setuptools import setup
+#!/usr/bin/env python
 
-setup(
-       name="pydantic_core",
-       version="${PV}",
-       license="${LICENSE}",
-       description="${DESCRIPTION}",
-       long_description="${S}/README.md"
-)
+import setuptools
+
+if __name__ == "__main__":
+    setuptools.setup(
+        name="pydantic_core._pydantic_core",
+        version="${PV}",
+        license="${LICENSE}",
+        description="${DESCRIPTION}",
+        long_description="${S}/README.md"
+    )
+#from setuptools import setup
+#
+#setup(
+#       name="pydantic_core",
+#       version="${PV}",
+#       license="${LICENSE}",
+#       description="${DESCRIPTION}",
+#       long_description="${S}/README.md"
+#)
 EOF
 }
