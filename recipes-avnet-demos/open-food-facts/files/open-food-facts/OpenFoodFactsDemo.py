@@ -96,11 +96,29 @@ class AppData:
 			if product_code != '0':
 				product = json_str.get("product")
 
-				self.productName = product["product_name_en"]
-				self.ingredients = product["ingredients_text_en"]
-				self.image = product["selected_images"]["front"]["display"]["en"]
+				try:
+					self.productName = product["product_name"]
+				except:
+					self.productName ="Product name missing"
 
-				allergenList = product["allergens_hierarchy"]
+				try:
+					self.ingredients = product["ingredients_text_en"]
+				except:
+					self.ingredients ="Not available"
+
+				try:
+					tempImage = product["selected_images"]["front"]["display"]
+					firstKey = list(tempImage.keys())[0]
+					print(firstKey)
+					self.image = product["selected_images"]["front"]["display"][firstKey]
+				except:
+					self.image =''
+
+				try:
+					allergenList = product["allergens_hierarchy"]
+				except:
+					allergenList = None
+
 				allergensString = ''
 				for x in range(len(allergenList)):
 					if 'en:' in allergenList[x]:
@@ -178,7 +196,7 @@ barcodeReader = BarcodeReader(logic.ReaderCallback)
 
 startChrome('http://localhost:5000')
 
-app.run(debug=True)
+app.run(debug=False)
 
 #sample code 			code = "3017620422003", "00014800210842", "54491014", "9002490205973 "
 
