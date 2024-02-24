@@ -11,14 +11,20 @@
 <body>
     <div id="page_main">
         <div id="page_header" class="header_banner">
-            <div class="header_container row">
-                <div class="logo col-4">
-                    <a href="index.html" title="AVNET"><img src="AVNET_logo.png" alt="Avnet" width="100%"
-                            height="auto"></a>
-                </div>
-                <div class="header_text col-8" style="text-align: center;">
-                    MaaXBoard 8ULP
-                </div>
+            <div class="header_container">
+                <table id="header-table"; border=0 cellpadding="0" cellspacing="0" style="border-collapse: collapse; text-align: center; font-family: sans-serif; color: white; width: 100%;">
+                    <tr>
+                        <th style="width: 30%; vertical-align:center; text-align: left;">
+                            <a href="index.html" title="AVNET"><img src="AVNET_logo.png" alt="Avnet" width="100%" height="auto"></a>
+                        </th>
+                        <th style="vertical-align:top;">
+                            <p style="font-size: Xxx-large; font-weight: bold; text-align: justify;">MaaXBoard 8ULP</p>
+                        </th>
+                        <th style="width: 10%; vertical-align:center; text-align: right;">
+                            <a title="AVNET"><img src="QRcode.png" alt="QRcode" width="100%" height="auto"></a>
+                        </th>                    
+                    </tr>
+                </table>
             </div>
         </div>
 
@@ -30,53 +36,50 @@
                         <img src="openfoodfacts.png">
                     </div>
                         
-                    <p>Open Food Facts is a food products database made by everyone, for everyone. 
-                        You can use it to make better food choices, and as it is open data, anyone can re-use it for any purpose.</p>
+                    Open Food Facts is a food products database made by everyone, for everyone. 
+                    You can use it to make better food choices, and as it is open data, anyone can re-use it for any purpose.
 
-                    <p style="font-size: x-large; font-family: sans-serif; color: #41c363;">Scan the barcode of a food item to explore.</p>
+                    <div style="text-align: center;">
+                        <p style="font-size: x-large; font-family: sans-serif;  text-align: center; color: #41c363;">Scan the barcode of a food item to explore.</p>
+                        <img style="border: 3px solid white" src="/video_feed" alt="" title="Camera Feed"> 
+                    </div>
 
-                    <table id="main_table"; border=0 cellpadding="10" style=" text-align: center; font-size: medium; font-family: sans-serif; color: white; width: 100%;">
-
+                    <br>
+                    <table id="main_table"; border=0 cellpadding="1" cellspacing="1" style="text-align: center; font-size: medium; font-family: sans-serif; color: white; width: 100%;">
                         <tr>
                             <th style="width: 40%;">
-                                 <img style="max-width:80%; height:auto;" id="product_image">
+                                 <img style="max-width:70%; height:auto;" id="product_image">
                             </th>
                             <th style="vertical-align: middle;">
-                                <p style="color: hsl(59, 94%, 50%); font-size: xx-large; text-align: center;"id="product_name"></p>
+                                <span style="color: hsl(59, 94%, 50%); font-size: xx-large; text-align: center; text-transform:uppercase"id="product_name"></span>
                             </th>
                         </tr>
                         <tr>
                             <th style="width: 20%; vertical-align:top;">
-                                <p style="font-size: x-large; color: #FF8714; text-align: center;" id="ingredients_text"></p>
+                                <span style="font-size: x-large; color: #FF8714; text-align: center;" id="ingredients_text"></span>
                             </th>
-                            <th style="vertical-align:middle;">
-                                <p style="font-size: large; text-align: left;" id="ingredients"></p>
+                            <th style="vertical-align:middle; text-align:left;">
+                                <span style="font-size: large; text-align:left;" id="ingredients"></span>
                             </th>
                         </tr>                        
                         <tr>
                             <th style="width: 20%; vertical-align:top;">
-                                <p style="font-size: x-large; color: #FF8714; text-align: center;" id="allergens_text"></p>
+                                <span style="font-size: x-large; color: #FF8714; text-align: center;" id="allergens_text"></span>
                             </th>
                             <th style="vertical-align:middle; text-align: left">
-                                <p style="font-size: large; text-align: left;" id="allergens"></p>
+                                <span style="font-size: large; text-align: left;" id="allergens"></span>
                             </th>
                         </tr>                        
                         <tr>
-                            <th style="width: 20%;">
-                                 <img style="max-height:100px; width:auto;" id="nutri_image">
+                            <th style="width: 20%; vertical-align:top;">
+                                <p style="font-size: x-large; color: #7d7b7c; text-align: center;" id="nutri_score_text"></p>
+                                <img style="max-height:100px; width:auto;" id="nutri_image">
+                                <p style="font-size: large; vertical-align:bottom; text-align: center;" id="nutri_score"></p>
                             </th>
                             <th style="vertical-align:top;">
-                                <p style="font-size: x-large; color: #7d7b7c;" id="nutri_score_text"></p>
-                                <p style="font-size: large;" id="nutri_score"></p>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th style="width: 20%;">
-                                 <img style="max-height:100px; width:auto;" id="nova_image">
-                            </th>
-                            <th style="vertical-align:top;">
-                                <p style="font-size: x-large; color: #7d7b7c;" id="nova_score_text"></p>
-                                <p style="font-size: large;" id="nova_score"></p>
+                                <p style="font-size: x-large; color: #7d7b7c; text-align: center;" id="nova_score_text"></p>
+                                <img style="max-height:100px; width:auto;" id="nova_image">
+                                <p style="font-size: large; vertical-align:bottom; text-align: center;" id="nova_score"></p>
                             </th>
                         </tr>
                     </table>

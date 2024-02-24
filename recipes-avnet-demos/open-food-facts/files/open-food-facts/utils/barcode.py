@@ -59,7 +59,7 @@ class BarcodeReader():
 		newBarcode = self.barcodeValue.strip()
 		self.barcodeValue = ''
 		if self.callback != None:
-			self.callback(newBarcode)
+			self.callback(newBarcode, "scanner")
 		return newBarcode
 	
 	def ReadBarcode(self):
@@ -81,7 +81,9 @@ class BarcodeReader():
 							if(key_lookup == 'CRLF'):
 								self.barcodeValue = barcodeTemp
 								barcodeTemp = ''
-								self.GetBarcode()
+
+								if self.barcodeValue != '':
+									self.GetBarcode()
 							else:
 								barcodeTemp = barcodeTemp + key_lookup
 
@@ -94,7 +96,8 @@ class BarcodeReader():
 		while True:
 			try:
 				self.barcodeValue = sys.stdin.readline()
-				self.GetBarcode()
+				if self.barcodeValue != '':
+					self.GetBarcode()
 			except:
 				pass
 

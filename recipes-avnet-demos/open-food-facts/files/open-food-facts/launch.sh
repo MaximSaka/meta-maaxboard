@@ -7,4 +7,12 @@ if [[ $OUTPUT != *"2.14.6"* ]]; then
   echo "Installing pydantic_core 2.14.6 ..."
   pip3 install pydantic_core==2.14.6
 fi
+
+OUTPUT=$(pip3 show pyzbar | grep Version)
+if [[ $OUTPUT != *"0.1.9"* ]]; then
+  echo "pyzbar 0.1.9 not found"
+  echo "Installing pyzbar 0.1.9 ..."
+  pip3 install pyzbar==0.1.9
+fi
+
 python3 /home/root/open-food-facts/OpenFoodFactsDemo.py

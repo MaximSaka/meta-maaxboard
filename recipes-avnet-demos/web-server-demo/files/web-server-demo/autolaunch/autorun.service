@@ -8,7 +8,8 @@ Restart=no
 Type=simple
 EnvironmentFile=/opt/root_env
 ExecStart=/opt/autorun.sh
-StandardOutput=console
+StandardOutput=tty
+TTYPath=/dev/ttyLP1
 
 [Install]
 WantedBy=multi-user.target weston.service

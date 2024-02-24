@@ -4,9 +4,8 @@
 # |    |  \ |___ |  \ |___ |_\| |__| | ___] |  |  |___ ___] 
 #                                                           
 #############################################################
-#pip3 install openfoodfacts
-#pip3 install microdot
-#pip3 install evdev
+#pip3 install pyzbar
+#pip3 install pydantic_core
 #############################################################
 
 #####################################################
@@ -19,18 +18,30 @@
 ########################################################
 run_on_hardware = True
 
+debug = False
+
 if run_on_hardware == False:
 	HardwareSupport = False
 	EnableUSBPowerMonitor = False
+	RotateCameraY = False
+	RotateCameraX = False	
 else:
 	HardwareSupport = True
 	EnableUSBPowerMonitor = True
+	RotateCameraY = False
+	RotateCameraX = False
+
 ########################################################
 import os
+import sys
+import fnmatch
+import cv2
 import json
 import subprocess
-import json
 import openfoodfacts
+from pyzbar.pyzbar import decode
+import requests # request img from web
+import shutil # save img locally
 
 from utils.MaaXBoardLEDS import BoardLEDS
 from utils.MaaXBoardLCD import BoardBrightness
@@ -48,6 +59,9 @@ from microdot_asyncio import Microdot, redirect, send_file
 me = singleton.SingleInstance()
 
 fileDir = os.path.dirname(os.path.realpath(__file__))
+samplesDir = fileDir+'/samples'
+
+global logic
 
 def GetFileFullPath(s):
 	filePath = os.path.join(fileDir, s)
@@ -65,6 +79,29 @@ def startChrome(url):
 	cmd = ' '.join([executable,'--no-sandbox --disable-features=OverscrollHistoryNavigation --kiosk --app=', url])
 	browswer_proc = subprocess.Popen(cmd, shell=True)
 
+def OpenCVDevice(self, useFile):
+	try:
+		if(self.cap.isOpened() == True):
+			CloseCVDevice(self)
+	except:
+		pass
+	
+	if run_on_hardware == True:
+		os.environ['OPENCV_FFMPEG_CAPTURE_OPTIONS'] = 'hwaccel;qsv|video_codec;h264_qsv|vsync;0'
+		self.cap = cv2.VideoCapture(cv2.CAP_V4L2)
+	else:
+		self.cap = cv2.VideoCapture(0)
+
+	self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+	self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+	self.cap.set(cv2.CAP_PROP_FPS, 10)
+
+def CloseCVDevice(self):
+	try:
+		self.cap.release()
+	except:
+		pass
+
 class AppData:
 	def __init__(self):
 		self.previousCode = ''
@@ -75,17 +112,50 @@ class AppData:
 		self.allergens = ''
 		self.nutriScore = ''
 		self.novaScore = ''
+		self.code = ''
 	
-	def ReaderCallback(self, barcode):
+	def DecodeFrame(self,frame):
+		try:
+			self.decoded = decode(frame)
+		except: pass
+
+		if len(self.decoded) > 0:
+			if(self.decoded[0].data.decode() != self.previousCode):
+				self.code = self.decoded[0].data.decode()
+				self.ReaderCallback(self.code, "camera")
+
+	def ReaderCallback(self, barcode, source):
 		self.barcode = barcode
 		if self.barcode != self.previousCode:
+			self.previousCode = self.barcode
+
+			if debug:
+				print(source)
+				print(self.barcode)
+
+			#search in local samples first
+			localFileFound = None
+			jsonFound = None
+			jpgFound = None
+			for file in os.listdir(samplesDir):
+				if fnmatch.fnmatch(file, '*'+self.barcode+'*.json'):
+					jsonFound = samplesDir+'/'+file
+
+				if fnmatch.fnmatch(file, '*'+self.barcode+'*.jpg'):
+					jpgFound = samplesDir+'/'+file
+
+			if (jpgFound != None) and (jsonFound != None):
+				localFileFound = jsonFound
+
 			try:
-				productInfo = openfoodfactsAPI.product.get(self.barcode)
+				if localFileFound == None:
+					productInfo = openfoodfactsAPI.product.get(self.barcode)
+				else:
+					# Opening JSON file
+					f = open(localFileFound)
+					productInfo = json.load(f)
 
 				json_formatted_str = json.dumps(productInfo, indent=2)
-
-				with open("product.json", "w") as outfile:
-					outfile.write(json_formatted_str)
 
 				json_str = json.loads(json_formatted_str)
 				product_code = json_str.get("code")
@@ -96,23 +166,53 @@ class AppData:
 			if product_code != '0':
 				product = json_str.get("product")
 
-				try:
-					self.productName = product["product_name"]
-				except:
-					self.productName ="Product name missing"
+				if localFileFound == None:
+					try:
+						tempImage = product["selected_images"]["front"]["display"]
+						firstKey = list(tempImage.keys())[0]
+						self.image = product["selected_images"]["front"]["display"][firstKey]
+					except:
+						self.image =''
+
+					if self.image != '' and debug:
+						try:
+							with open(samplesDir+'/'+self.barcode+".json", "w") as outfile:
+								outfile.write(json_formatted_str)
+
+							url = self.image
+							onlineImage = requests.get(url, stream = True)
+							image_file_name = samplesDir+'/'+self.barcode+".jpg"
+
+							if onlineImage.status_code == 200:
+								with open(image_file_name,'wb') as f:
+									shutil.copyfileobj(onlineImage.raw, f)
+						except: pass
+				else:
+					self.image = '/samples/'+os.path.basename(jpgFound)
 
 				try:
 					self.ingredients = product["ingredients_text_en"]
 				except:
-					self.ingredients ="Not available"
+					pass
+
+				if self.ingredients == '':
+					try:
+						self.ingredients = product["ingredients_text_"+firstKey]
+					except:
+						self.ingredients ="Not available"
 
 				try:
-					tempImage = product["selected_images"]["front"]["display"]
-					firstKey = list(tempImage.keys())[0]
-					print(firstKey)
-					self.image = product["selected_images"]["front"]["display"][firstKey]
+					self.productName = product["product_name_en"]
 				except:
-					self.image =''
+					pass
+
+				if self.productName == '':
+					try:
+						self.productName = product["product_name_"+firstKey]
+					except:
+						self.productName ="Product name missing"
+
+				self.productName = self.productName + "\n\n #" + product_code
 
 				try:
 					allergenList = product["allergens_hierarchy"]
@@ -129,19 +229,72 @@ class AppData:
 
 				value = product.get("nutriscore_data")
 				if value != None:
-					self.nutriScore = value["grade"]
+					try:
+						self.nutriScore = value["grade"]
+					except:
+						self.nutriScore = None
 
 				value = product.get("nutriments")
 				if value != None:
-					self.novaScore = value["nova-group"]
+					try:
+						self.novaScore = value["nova-group"]
+					except:
+						self.novaScore = None
+
 			else: 
 				self.productName = ''
 
-			#self.previousCode = self.barcode
-	
 
 ########################################################
 app = Microdot()
+
+@app.route('/video_feed')
+async def video_feed(request):
+	if sys.implementation.name != 'micropython':
+		# CPython supports yielding async generators
+		async def stream():
+			yield b'--frame\r\n'
+			OpenCVDevice(logic, False)
+			while True:
+				while (logic.cap.isOpened()):
+					ret, frame = logic.cap.read()
+					if ret:
+						frame = frame[160:160+160, 160:160+320]
+						frame = cv2.flip(frame, 0)
+						frame = cv2.flip(frame, 1)
+
+						detect_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+						logic.DecodeFrame(detect_frame)
+
+						if len(logic.decoded) > 0:
+							if logic.decoded[0].polygon is not None:
+								if logic.decoded[0].data.decode() is not None:
+									color=(0,0,255)
+									thick=3
+									(x, y, w, h) = logic.decoded[0].rect
+									cv2.rectangle(frame, (x, y), (x + w, y + h), color, thick)
+
+						_, frame = cv2.imencode('.JPEG', frame)
+						yield (b'--frame\r\n'
+							b'Content-Type: image/jpeg\r\n\r\n' + frame.tobytes() + b'\r\n')
+
+					await asyncio.sleep(0.07)
+				await asyncio.sleep(0.05)
+
+	else:
+		# MicroPython can only use class-based async generators
+		class stream():
+			def __init__(self):
+				self.i = 0
+
+			def __aiter__(self):
+				return self
+
+			async def __anext__(self):
+				await asyncio.sleep(1)
+
+	return stream(), 200, {'Content-Type':
+						   'multipart/x-mixed-replace; boundary=frame'}
 
 @app.route('/product.cgi', methods=['GET'])
 def power(request):
@@ -158,6 +311,15 @@ def power(request):
 
 		product_cookie = json.dumps(data_set)
 		response = product_cookie
+	return response
+
+@app.route('/samples/<name>', methods=['GET', 'POST'])
+def index(request,name):
+	if request.method == 'POST':
+		response = redirect('/')
+	else:
+		response = send_file(GetFileFullPath('samples/'+name))
+
 	return response
 
 @app.route('/<name>', methods=['GET', 'POST'])
@@ -192,11 +354,12 @@ hardwareLEDS.LED_init()
 hardwareLCD = BoardBrightness(HardwareSupport)
 hardwareLCD.Brightness_init()
 
+#load a default product
+logic.ReaderCallback('54491496', "init")
+
 barcodeReader = BarcodeReader(logic.ReaderCallback)
 
 startChrome('http://localhost:5000')
 
 app.run(debug=False)
-
-#sample code 			code = "3017620422003", "00014800210842", "54491014", "9002490205973 "
 

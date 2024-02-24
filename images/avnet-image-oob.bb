@@ -102,6 +102,7 @@ CORE_IMAGE_EXTRA_INSTALL:append = " \
     web-server-demo \
     open-food-facts \
     freerdp \
+    zbar \
 "
 
 inherit extrausers
