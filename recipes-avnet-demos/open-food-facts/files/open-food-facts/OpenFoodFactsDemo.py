@@ -193,7 +193,7 @@ class AppData:
 				try:
 					self.ingredients = product["ingredients_text_en"]
 				except:
-					pass
+					self.ingredients = ''
 
 				if self.ingredients == '':
 					try:
@@ -204,7 +204,7 @@ class AppData:
 				try:
 					self.productName = product["product_name_en"]
 				except:
-					pass
+					self.productName = ''
 
 				if self.productName == '':
 					try:
@@ -260,7 +260,6 @@ async def video_feed(request):
 					ret, frame = logic.cap.read()
 					if ret:
 						frame = frame[160:160+160, 160:160+320]
-						frame = cv2.flip(frame, 0)
 						frame = cv2.flip(frame, 1)
 
 						detect_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
