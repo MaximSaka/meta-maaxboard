@@ -1,4 +1,5 @@
 #!/bin/sh
+echo "updating date"
 date -d "$(wget --method=HEAD -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f4-10)"
 
 OUTPUT=$(pip3 show pydantic_core | grep Version)
@@ -14,5 +15,5 @@ if [[ $OUTPUT != *"0.1.9"* ]]; then
   echo "Installing pyzbar 0.1.9 ..."
   pip3 install pyzbar==0.1.9
 fi
-
+echo "Starting Demo"
 python3 /home/root/open-food-facts/OpenFoodFactsDemo.py

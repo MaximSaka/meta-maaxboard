@@ -9,7 +9,7 @@
 #############################################################
 
 #####################################################
-#to stop teh service use this command
+#to stop the service use this command
 #systemctl stop  autorun.service
 #####################################################
 
@@ -92,8 +92,8 @@ def OpenCVDevice(self, useFile):
 	else:
 		self.cap = cv2.VideoCapture(0)
 
-	self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
-	self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+	self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+	self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 	self.cap.set(cv2.CAP_PROP_FPS, 10)
 
 def CloseCVDevice(self):
@@ -160,10 +160,14 @@ class AppData:
 				json_str = json.loads(json_formatted_str)
 				product_code = json_str.get("code")
 			except:
-				product_code = '0'
-				pass
+				product_code = ''
 
-			if product_code != '0':
+			try:
+				product = json_str.get("product")
+			except:
+				product = None
+
+			if (product_code != '') and (product != None):
 				product = json_str.get("product")
 
 				if localFileFound == None:
@@ -208,6 +212,12 @@ class AppData:
 
 				if self.productName == '':
 					try:
+						self.productName = product["product_name"]
+					except:
+						self.productName = ''
+
+				if self.productName == '':
+					try:
 						self.productName = product["product_name_"+firstKey]
 					except:
 						self.productName ="Product name missing"
@@ -215,17 +225,18 @@ class AppData:
 				self.productName = self.productName + "\n\n #" + product_code
 
 				try:
+					self.allergens = ''
 					allergenList = product["allergens_hierarchy"]
 				except:
 					allergenList = None
 
-				allergensString = ''
-				for x in range(len(allergenList)):
-					if 'en:' in allergenList[x]:
-						allergensString = allergensString + allergenList[x].removeprefix('en:') + ', '
-				self.allergens = allergensString[:-2] #remove extra comma from the end of the string
-				if self.allergens == '':
-					self.allergens = 'None'
+				if allergenList != None:
+					for x in range(len(allergenList)):
+						if 'en:' in allergenList[x]:
+							self.allergens = self.allergens + allergenList[x].removeprefix('en:') + ', '
+					self.allergens = self.allergens[:-2] #remove extra comma from the end of the string
+					if self.allergens == '':
+						self.allergens = 'None'
 
 				value = product.get("nutriscore_data")
 				if value != None:
@@ -259,8 +270,9 @@ async def video_feed(request):
 				while (logic.cap.isOpened()):
 					ret, frame = logic.cap.read()
 					if ret:
-						frame = frame[160:160+160, 160:160+320]
-						frame = cv2.flip(frame, 1)
+						height, width, channels = frame.shape
+						frame = frame[130:height-130, 60:width-60]
+						#frame = cv2.flip(frame, 1)
 
 						detect_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 						logic.DecodeFrame(detect_frame)
